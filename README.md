@@ -123,3 +123,11 @@ full detail in `04_Note_MonthYear_Text_Format.md` and inline comments in
 See `/screenshots` : Cleaning_Log after a run, lookup
 columns in `Clean_Data`, the 3 PivotTables, conditional formatting on
 `Alerts`, the Data Validation dropdown in action, and the exported PDF.
+
+## License
+
+© 2026 Vasanth Kumar S. All Rights Reserved.
+
+This project is publicly available for portfolio and evaluation purposes.
+Please do not copy, redistribute, modify, or reuse the source code without
+permission.
