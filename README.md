@@ -120,6 +120,6 @@ full detail in `04_Note_MonthYear_Text_Format.md` and inline comments in
 
 ## Screenshots
 
-See `/screenshots` (to be added): Cleaning_Log after a run, lookup
+See `/screenshots` : Cleaning_Log after a run, lookup
 columns in `Clean_Data`, the 3 PivotTables, conditional formatting on
 `Alerts`, the Data Validation dropdown in action, and the exported PDF.
