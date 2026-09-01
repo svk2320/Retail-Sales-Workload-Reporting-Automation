@@ -11,13 +11,19 @@ Messiness introduced (only in batches flagged MESSY):
 - inconsistent text casing in Dept. Name / City ("dry", "DRY", "Dry ")
 - stray whitespace in text fields
 """
+import os
 import openpyxl
 import random
 import copy
 
 random.seed(42)
 
-SRC = "salesworkload_ORIGINAL.xlsx"
+# All source/output files live in the source_data folder alongside this script's project
+SOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "source_data")
+SOURCE_DIR = os.path.normpath(SOURCE_DIR)
+
+SRC = os.path.join(SOURCE_DIR, "salesworkload_ORIGINAL.xlsx")
+
 wb = openpyxl.load_workbook(SRC, data_only=True)
 ws = wb["sales_figures"]
 
@@ -100,7 +106,7 @@ for month in batch_months:
 
         random.shuffle(rows)  # so duplicates aren't all at the end (realistic)
 
-    # Write out this batch as its own file
+    # Write out this batch as its own file, into source_data/
     out_wb = openpyxl.Workbook()
     out_ws = out_wb.active
     out_ws.title = "Raw_Export"
@@ -111,5 +117,6 @@ for month in batch_months:
     safe_month = month.replace(".", "_")
     tag = "MESSY" if is_messy else "clean"
     fname = f"export_batch_{safe_month}_{tag}.xlsx"
-    out_wb.save(fname)
-    print(f"Wrote {fname}: {len(rows)} rows (original {len(by_month[month])})")
+    out_path = os.path.join(SOURCE_DIR, fname)
+    out_wb.save(out_path)
+    print(f"Wrote {out_path}: {len(rows)} rows (original {len(by_month[month])})")
