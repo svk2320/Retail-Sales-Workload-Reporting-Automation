@@ -1,14 +1,4 @@
-Attribute VB_Name = "Module1"
 Option Explicit
-
-' ============================================================
-' Retail Sales & Workload Reporting Automation
-' VBA Macros — full source, exported for portfolio/code review
-' ============================================================
-' Sheets referenced: Raw_Data, Clean_Data, Store_Master,
-'                    Reports_Pivot, Alerts, Cleaning_Log,
-'                    Summary_Export
-' ============================================================
 
 Public silentMode As Boolean
 
@@ -24,7 +14,7 @@ Sub CleanData()
     Set wsLog = ThisWorkbook.Sheets("Cleaning_Log")
     Set dictSeen = CreateObject("Scripting.Dictionary")
 
-    lastRow = wsRaw.Cells(wsRaw.Rows.Count, "A").End(xlUp).Row
+    lastRow = wsRaw.Cells(wsRaw.Rows.count, "A").End(xlUp).Row
     totalIn = lastRow - 1 ' minus header
 
     ' Clear Clean_Data and rewrite header + Is_Valid column
@@ -102,7 +92,7 @@ Sub CleanData()
     wsLog.Range("B7").Value = rollupCount
     wsLog.Range("A8").Value = "Total rows out (Clean_Data):"
     wsLog.Range("B8").Value = outRow - 2
-
+    
     Call RefreshLookups
 
     If Not silentMode Then
@@ -115,26 +105,14 @@ Sub CleanData()
 End Sub
 
 Function StandardizeMonthYear(val As Variant) As String
-    ' Standardizes MonthYear values into a consistent "MM.YYYY" text format.
-    ' Handles 3 known messy input formats: "MM.YYYY" (already correct),
-    ' "YYYY-MM" (ISO-style), and "Mon-YY" (e.g. "Apr-17").
-    '
-    ' IMPORTANT BUG NOTE (documented for transparency):
-    ' An earlier version of this function used IsDate() to detect when
-    ' Excel had silently auto-converted text like "Apr-17" into a real
-    ' Date value. This caused a real bug: VBA's IsDate("Apr-17") returns
-    ' True, but interprets it as "April 17th of the CURRENT system year"
-    ' (reading "17" as a DAY, not a year) -- producing "04.2026" instead
-    ' of the correct "04.2017". Fixed by (a) checking explicit text
-    ' patterns FIRST, before any date-type fallback, and (b) replacing
-    ' IsDate() with VarType(val) = vbDate, which only catches values that
-    ' are genuinely Date-typed, not text that merely looks date-like.
     Dim months As Variant
     months = Array("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
 
     Dim v As String
 
-    ' Case 1: Excel already silently converted this to a true Date type
+    ' If Excel already silently converted this to a true Date type (not text),
+    ' pull Month/Year directly. This only fires for actual Date variables,
+    ' not for text that merely LOOKS like a date to VBA's IsDate.
     If VarType(val) = vbDate Then
         Dim d As Date
         d = CDate(val)
@@ -156,8 +134,9 @@ Function StandardizeMonthYear(val As Variant) As String
         Exit Function
     End If
 
-    ' Mon-YY format e.g. "Apr-17" -- checked as TEXT PATTERN before any
-    ' IsDate() fallback (see bug note above)
+    ' Mon-YY format e.g. "Apr-17" -- MUST be checked as TEXT PATTERN before
+    ' any IsDate() check, because VBA's IsDate misreads "Apr-17" as
+    ' "April 17, [current year]" instead of "April 2017"
     Dim parts() As String
     If InStr(v, "-") > 0 Then
         parts = Split(v, "-")
@@ -197,13 +176,6 @@ Function ProperCaseTrim(val As String) As String
 End Function
 
 Sub RefreshLookups()
-    ' Writes 3 lookup columns into Clean_Data, pulling from Store_Master:
-    '   P: Store Name  -- via XLOOKUP if supported (Excel 365/2021+),
-    '                     auto-falls back to INDEX-MATCH otherwise
-    '                     (detected live, e.g. confirmed fallback on
-    '                     Excel 2019)
-    '   Q: Region      -- via VLOOKUP
-    '   R: Scheme      -- via INDEX-MATCH
     Dim wsClean As Worksheet, wsMaster As Worksheet
     Dim lastRow As Long, lastMaster As Long, i As Long
     Dim xlookupSupported As Boolean
@@ -211,8 +183,8 @@ Sub RefreshLookups()
     Set wsClean = ThisWorkbook.Sheets("Clean_Data")
     Set wsMaster = ThisWorkbook.Sheets("Store_Master")
 
-    lastRow = wsClean.Cells(wsClean.Rows.Count, "A").End(xlUp).Row
-    lastMaster = wsMaster.Cells(wsMaster.Rows.Count, "A").End(xlUp).Row
+    lastRow = wsClean.Cells(wsClean.Rows.count, "A").End(xlUp).Row
+    lastMaster = wsMaster.Cells(wsMaster.Rows.count, "A").End(xlUp).Row
 
     ' Detect XLOOKUP support by testing it on a scratch cell
     xlookupSupported = True
@@ -265,22 +237,18 @@ Sub RefreshLookups()
         MsgBox "Note: XLOOKUP is not available in this Excel version." & vbCrLf & _
                "Store_Name_Lookup column used INDEX-MATCH instead.", vbInformation
     End If
+
 End Sub
 
 Sub ApplyFormatting()
-    ' Mirrors Clean_Data into Alerts (as values, auto-sized to current
-    ' row count) and applies 3 conditional formatting rules:
-    '   - Turnover < 500,000            -> orange cell highlight
-    '   - Customer = 0                  -> yellow cell highlight
-    '   - Is_Valid = "INVALID"          -> light red highlight, whole row
     Dim wsClean As Worksheet, wsAlerts As Worksheet
     Dim lastRow As Long, lastCol As Long
 
     Set wsClean = ThisWorkbook.Sheets("Clean_Data")
     Set wsAlerts = ThisWorkbook.Sheets("Alerts")
 
-    lastRow = wsClean.Cells(wsClean.Rows.Count, "A").End(xlUp).Row
-    lastCol = wsClean.Cells(1, wsClean.Columns.Count).End(xlToLeft).Column
+    lastRow = wsClean.Cells(wsClean.Rows.count, "A").End(xlUp).Row
+    lastCol = wsClean.Cells(1, wsClean.Columns.count).End(xlToLeft).Column
 
     ' Clear old Alerts content + formatting, then mirror Clean_Data (values only)
     wsAlerts.Cells.Clear
@@ -319,13 +287,11 @@ Sub ApplyFormatting()
     If Not silentMode Then
         MsgBox "ApplyFormatting complete. Alerts sheet refreshed with " & (lastRow - 1) & " rows.", vbInformation
     End If
+    
 End Sub
 
+
 Sub RefreshPivots()
-    ' Refreshes every PivotTable on Reports_Pivot with one click.
-    ' Note: pivots themselves are built manually in Excel (Country,
-    ' Department, Month trend) -- this macro only refreshes their cache
-    ' against updated Clean_Data, it does not rebuild pivot structure.
     Dim pt As PivotTable
     Dim ws As Worksheet
     Dim count As Integer
@@ -341,12 +307,10 @@ Sub RefreshPivots()
     If Not silentMode Then
         MsgBox "RefreshPivots complete. " & count & " PivotTable(s) refreshed.", vbInformation
     End If
+    
 End Sub
 
 Sub GenerateSummary()
-    ' Builds a one-page dashboard on Summary_Export: title + timestamp,
-    ' 3 SUMIFS KPI cards, and snapshots (values only) of all 3 pivots
-    ' from Reports_Pivot, laid out side by side.
     Dim wsSum As Worksheet, wsPivot As Worksheet
     Dim r As Long
 
@@ -394,20 +358,10 @@ Sub GenerateSummary()
     If Not silentMode Then
         MsgBox "GenerateSummary complete. Summary_Export sheet refreshed.", vbInformation
     End If
+    
 End Sub
 
 Sub ExportToPDF()
-    ' Exports Summary_Export as a dated PDF into the workbook's own folder.
-    '
-    ' NOTE: page layout (Landscape orientation, Print Area, "Fit to 1
-    ' page wide") is set manually, once, directly in Excel's Page Layout
-    ' tab -- NOT via VBA PageSetup properties. An earlier attempt to
-    ' control this via FitToPagesWide/FitToPagesTall in code caused
-    ' real layout bugs (either misaligned tables across pages, or -- when
-    ' FitToPagesTall was forced to 1 -- all KPI/pivot VALUES were cut off
-    ' entirely, leaving only labels). Reverting to a simple export call
-    ' and relying on manually-configured, persisted page setup settings
-    ' produced a correct, single-page PDF reliably.
     Dim wsSum As Worksheet
     Dim filePath As String
     Dim fileName As String
@@ -417,23 +371,17 @@ Sub ExportToPDF()
     fileName = "Sales_Summary_" & Format(Now, "yyyy-mm-dd") & ".pdf"
     filePath = ThisWorkbook.Path & "\" & fileName
 
-    wsSum.ExportAsFixedFormat Type:=xlTypePDF, Filename:=filePath, _
+    wsSum.ExportAsFixedFormat Type:=xlTypePDF, fileName:=filePath, _
         Quality:=xlQualityStandard, IncludeDocProperties:=True, _
         IgnorePrintAreas:=False, OpenAfterPublish:=False
 
     If Not silentMode Then
         MsgBox "ExportToPDF complete." & vbCrLf & "Saved to: " & filePath, vbInformation
     End If
+    
 End Sub
 
 Sub RunFullReport()
-    ' Master "one-click" macro: chains every step end-to-end.
-    ' Sets silentMode = True so intermediate macros suppress their own
-    ' MsgBox popups -- only this final timing summary is shown.
-    '
-    ' Verified real run time: 11.8 seconds (see PROJECT_STATUS.md for
-    ' the reasoned ~1 hour manual-baseline comparison used in the
-    ' resume bullet).
     Dim startTime As Double
     startTime = Timer
 
