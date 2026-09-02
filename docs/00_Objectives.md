@@ -70,19 +70,20 @@ of an invented Product Master.
 
 > "Built a VBA-automated Excel reporting system integrating XLOOKUP,
 > VLOOKUP, INDEX-MATCH, SUMIFS, PivotTables, and Data Validation across a
-> multi-sheet retail sales workbook — reduced manual reporting from ~X
-> hours to under Y minutes."
-> (X/Y filled in once we do the actual before/after timing.)
+> multi-sheet retail sales workbook — reduced manual reporting from ~1
+> hour to under 12 seconds."
 
 ## 8. Status
 
 - [x] Objectives defined
-- [ ] Requirements spec
-- [ ] Raw data messiness introduced (before-state)
-- [ ] Cleaning macro
-- [ ] Lookup layer
-- [ ] Pivot layer
-- [ ] Conditional formatting
-- [ ] Data validation form
-- [ ] One-click master macro
-- [ ] README + screenshots + timing proof
+- [x] Requirements spec
+- [x] Raw data messiness introduced (before-state)
+- [x] Cleaning macro
+- [x] Lookup layer
+- [x] Pivot layer
+- [x] Conditional formatting
+- [x] Data validation form
+- [x] One-click master macro
+- [x] README + screenshots + timing proof
+
+Project complete — see root [`README.md`](../README.md) for final results.

@@ -51,7 +51,7 @@ See `02_Why_Messy_Batches.md` for full reasoning.
 | SUMIFS                 | `Reports_Pivot` KPI cards — single- and multi-condition totals                               |
 | Conditional Formatting | `Alerts` sheet — 3 rules, applied via VBA                                                    |
 | Data Validation        | `Data_Entry_Form` — dropdowns + numeric range restriction                                    |
-| VBA/Macros             | 6 macros (see below), chained into one master macro                                          |
+| VBA/Macros             | 7 macros (see below), chained into one master macro                                          |
 
 ## VBA Macros
 
@@ -100,23 +100,45 @@ full detail in `04_Note_MonthYear_Text_Format.md` and inline comments in
 
 > Built a VBA-automated Excel reporting system integrating
 > XLOOKUP/INDEX-MATCH, VLOOKUP, SUMIFS, PivotTables, and Data Validation
-> across a multi-sheet retail sales workbook — reduced recurring manual
-> reporting time from ~1 hour to under 12 seconds with a one-click macro.
+> across a multi-sheet retail sales workbook — reduced an estimated ~1
+> hour of recurring manual reporting to under 12 seconds with a
+> one-click macro.
 
-## Files in This Project
+## Repository Structure
 
-- `00_Objectives.md` — business problem, scope, target resume bullet
-- `01_Requirements.md` — functional spec (sheets, macros, skills map)
-- `02_Why_Messy_Batches.md` — why/how the "before" state was simulated
-- `03_Build_Workbook_Shell_Notes.md` — what the workbook-assembly script did
-- `04_Note_MonthYear_Text_Format.md` — the date-handling bug story in detail
-- `PROJECT_STATUS.md` — full build log, in order, with every decision and fix
-- `VBA_Macros.bas` — all 6 macros, standalone source file
-- `RetailSalesWorkloadAutomation.xlsm` — the working macro-enabled workbook
-- `salesworkload_ORIGINAL.xlsx` — original real source data (untouched)
-- `export_batch_*.xlsx` — the 4 simulated monthly export batches
-- `make_messy_batches.py`, `build_workbook_shell.py` — one-time setup
-  scripts used to generate the batches and initial workbook shell
+```
+├── README.md
+├── LICENSE
+├── RetailSalesWorkloadAutomation.xlsm   ← the working macro-enabled workbook
+├── VBA_Macros.bas                       ← all 7 macros, standalone source file
+├── Sales_Summary_2026-09-01.pdf         ← sample exported report
+│
+├── docs/
+│   ├── 00_Objectives.md                 ← business problem, scope, target resume bullet
+│   ├── 01_Requirements.md               ← functional spec (sheets, macros, skills map)
+│   ├── 02_Why_Messy_Batches.md          ← why/how the "before" state was simulated
+│   ├── 03_Build_Workbook_Shell_Notes.md ← what the workbook-assembly script did
+│   ├── 04_Note_MonthYear_Text_Format.md ← the date-handling bug story in detail
+│   └── Dataset Source.txt               ← source data attribution
+│
+├── project progress status/
+│   └── PROJECT_STATUS (0–5).md          ← full build log, in order, with every decision and fix
+│
+├── screenshots/                         ← Cleaning Log, Clean Data, Data Entry Form,
+│                                            Raw Data, Reports Pivot, Store Master, Summary Export
+│
+├── scripts/
+│   ├── make_messy_batches.py            ← one-time script that generated the messy batch files
+│   └── build_workbook_shell.py          ← one-time script that assembled the initial workbook shell
+│
+├── source_data/
+│   ├── salesworkload_ORIGINAL.xlsx      ← original real source data (untouched)
+│   └── export_batch_*.xlsx              ← the 4 simulated monthly export batches
+│
+└── archive/                             ← earlier workbook/macro versions, kept for history
+```
+
+> Note: `archive/` contains earlier drafts of the workbook and macros, kept for build-history reference — not the current deliverable. The current files are in the repository root.
 
 ## Screenshots
 

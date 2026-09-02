@@ -12,7 +12,7 @@ that assembled the main project workbook: `RetailSalesWorkloadAutomation.xlsx`.
      `export_batch_04_2017_MESSY.xlsx`)
    - Took the header row once
    - Stacked all their data rows together, one after another
-   - Wrote the combined result (3,450 rows) into `Raw_Data`
+   - Wrote the combined result (3,450 rows) into `Raw_Data` — a representative subset of the full ~7,660-row source dataset, sized appropriately for a 4-batch monthly-export simulation
    - Messiness from batches 2 and 4 (MESSY) is preserved as-is — nothing
      was cleaned at this stage
 
